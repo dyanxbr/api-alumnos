@@ -66,9 +66,13 @@ app.patch('/api/carreras/:id/estatus', async (req, res) => {
 app.get('/api/catalogos-registro', async (req, res) => {
     try {
         const [carreras] = await db.query(`
-            SELECT DISTINCT id_carrera, nombre_carrera, siglas
+            SELECT 
+                MIN(id_carrera) AS id_carrera,
+                nombre_carrera,
+                siglas
             FROM Carreras
             WHERE estatus = 1
+            GROUP BY nombre_carrera, siglas
             ORDER BY nombre_carrera ASC
         `);
 
