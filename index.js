@@ -4,14 +4,12 @@ const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log("API corriendo en puerto", PORT);
-});
 
-
+/* Middlewares */
 app.use(cors());
 app.use(express.json());
 
+/* DB */
 const db = mysql.createPool({
     host: 'metro.proxy.rlwy.net',
     user: 'root',
@@ -25,27 +23,40 @@ const db = mysql.createPool({
 
 db.getConnection()
     .then(connection => {
-        console.log('CONECTADO A RAILWAY');
+        console.log('✅ CONECTADO A RAILWAY');
         connection.release();
     })
     .catch(err => {
-        console.error('ERROR DE CONEXIÓN:', err.message);
+        console.error('❌ ERROR DE CONEXIÓN:', err.message);
     });
+
+app.get('/', (req, res) => {
+    res.send('API alumnos funcionando 🚀');
+});
 
 app.get('/api/carreras-todas', async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT * FROM Carreras ORDER BY nombre_carrera ASC');
+        const [rows] = await db.query(
+            'SELECT * FROM Carreras ORDER BY nombre_carrera ASC'
+        );
         res.json(rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
+
 app.patch('/api/carreras/:id/estatus', async (req, res) => {
     const { id } = req.params;
     try {
-        await db.query('UPDATE Carreras SET estatus = NOT estatus WHERE id_carrera = ?', [id]);
-        const [rows] = await db.query('SELECT estatus FROM Carreras WHERE id_carrera = ?', [id]);
+        await db.query(
+            'UPDATE Carreras SET estatus = NOT estatus WHERE id_carrera = ?',
+            [id]
+        );
+        const [rows] = await db.query(
+            'SELECT estatus FROM Carreras WHERE id_carrera = ?',
+            [id]
+        );
         res.json({ success: true, nuevoEstatus: rows[0].estatus });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -173,5 +184,5 @@ app.patch('/api/alumnos/:id/estatus', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`API corriendo en http://localhost:${PORT}`);
+    console.log(`🚀 API levantada en puerto ${PORT}`);
 });
