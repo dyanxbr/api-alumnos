@@ -65,9 +65,16 @@ app.patch('/api/carreras/:id/estatus', async (req, res) => {
 
 app.get('/api/catalogos-registro', async (req, res) => {
     try {
-        const [carreras] = await db.query('SELECT * FROM Carreras WHERE estatus = 1 ORDER BY nombre_carrera ASC');
+        const [carreras] = await db.query(`
+            SELECT DISTINCT id_carrera, nombre_carrera, siglas
+            FROM Carreras
+            WHERE estatus = 1
+            ORDER BY nombre_carrera ASC
+        `);
+
         const [turnos] = await db.query('SELECT * FROM Turnos');
         const [grados] = await db.query('SELECT * FROM Grados ORDER BY numero_grado ASC');
+
         res.json({ carreras, turnos, grados });
     } catch (err) {
         res.status(500).json({ error: err.message });
