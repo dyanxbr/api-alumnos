@@ -183,6 +183,6 @@ app.patch('/api/alumnos/:id/estatus', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`🚀 API levantada en puerto ${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`API corriendo en puerto ${PORT}`);
 });
